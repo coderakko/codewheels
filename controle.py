@@ -1,23 +1,46 @@
 import tkinter as tk
 import socket
+import json
+import os
 import pyglet
 
 pyglet.font.add_file("Wheel Turn.otf")
 
-IP_ESP32 = "192.168.7.149"
 PORTA = 5000
+ARQUIVO_CARRINHO = "carrinho.json"
 
 cliente = None
 conectado = False
 
 
+def carregar_carrinho():
+    if os.path.exists(ARQUIVO_CARRINHO):
+        with open(ARQUIVO_CARRINHO, "r", encoding="utf-8") as arquivo:
+            return json.load(arquivo)
+
+    return {
+        "nome": "Carrinho não cadastrado",
+        "ip": ""
+    }
+
+
 def conectar():
     global cliente, conectado
+
+    dados = carregar_carrinho()
+    ip = dados["ip"]
+
+    label_nome_carrinho.config(text=f"Carrinho: {dados['nome']}")
+
+    if ip == "":
+        conectado = False
+        label_status.config(text="IP do carrinho não cadastrado", fg="#E74C3C")
+        return
 
     try:
         cliente = socket.socket()
         cliente.settimeout(2)
-        cliente.connect((IP_ESP32, PORTA))
+        cliente.connect((ip, PORTA))
 
         conectado = True
         label_status.config(text="ESP32 ONLINE", fg="#2ECC71")
@@ -61,7 +84,7 @@ def direita(event=None):
 
 janela = tk.Tk()
 janela.title("CodeWheels - Controle")
-janela.geometry("640x560")
+janela.geometry("640x600")
 janela.configure(bg="#D9D9D9")
 janela.resizable(False, False)
 
@@ -78,7 +101,7 @@ card = tk.Frame(
     janela,
     bg="white",
     width=460,
-    height=430
+    height=470
 )
 card.pack()
 card.pack_propagate(False)
@@ -100,6 +123,15 @@ label_topo = tk.Label(
 )
 label_topo.pack(pady=17)
 
+label_nome_carrinho = tk.Label(
+    card,
+    text="Carrinho: carregando...",
+    font=("Arial", 12),
+    bg="white",
+    fg="#777777"
+)
+label_nome_carrinho.pack(pady=8)
+
 label_status = tk.Label(
     card,
     text="Verificando conexão...",
@@ -107,7 +139,7 @@ label_status = tk.Label(
     bg="white",
     fg="#999999"
 )
-label_status.pack(pady=15)
+label_status.pack(pady=8)
 
 label_comando = tk.Label(
     card,
@@ -119,7 +151,7 @@ label_comando = tk.Label(
 label_comando.pack(pady=5)
 
 frame = tk.Frame(card, bg="white")
-frame.pack(pady=25)
+frame.pack(pady=22)
 
 botao_frente = tk.Button(
     frame,
@@ -201,4 +233,5 @@ janela.bind("<D>", direita)
 janela.focus_force()
 
 conectar()
+
 janela.mainloop()
