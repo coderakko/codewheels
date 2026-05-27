@@ -1,3 +1,5 @@
+#código do professor #
+
 #include <WiFi.h>
 
 const char* ssid = "Rede Fessor";
