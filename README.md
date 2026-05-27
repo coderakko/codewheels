@@ -1,10 +1,9 @@
 # codewheels
-Sistema de controle de rover via LAN utilizando Python e ESP32.
+Sistema de controle de rover via LAN sistema feito por python para conexão via LAN no ESP32
 
 📌 Descrição
 
-O CodeWheels é um sistema desktop desenvolvido para controlar um rover remotamente através da rede local (LAN).
-A aplicação permite cadastro do rover, autenticação de usuários e controle de movimentação utilizando teclado ou interface gráfica.
+O Code Wheels é um sistema feito para cadastro do usuário, login do usuário, cadastro do rover e controle do mesmo.
 
 ⚙️ Tecnologias Utilizadas
 Python
@@ -13,6 +12,7 @@ ESP32
 Socket TCP/IP
 JSON
 C++ (Arduino IDE)
+
 🖥️ Funcionalidades
 Sistema de login e registro
 Cadastro de rover
@@ -22,12 +22,14 @@ Comunicação em rede local
 Interface gráfica moderna
 Salvamento de dados em JSON
 Detecção de rover online/offline
+
 🎮 Controles
 Tecla	Função
 W	Frente
 S	Ré
 A	Esquerda
 D	Direita
+
 🌐 Comunicação LAN
 
 O sistema utiliza conexão TCP/IP entre:
@@ -35,16 +37,4 @@ O sistema utiliza conexão TCP/IP entre:
 Notebook/Desktop (Sistema Python)
 ESP32 (Rover)
 
-Ambos devem estar conectados na mesma rede Wi-Fi.
-
-CodeWheels/
-│
-├── sistema.py
-├── menu.py
-├── controle.py
-├── cadastro_rover.py
-├── codigo_lan.ino
-├── rover.json
-├── usuarios.json
-├── Wheel Turn.otf
-└── README.md
+Devem estar conectados na mesma rede Wi-Fi.
