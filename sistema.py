@@ -10,108 +10,253 @@ pyglet.font.add_file("Wheel Turn.otf")
 ARQUIVO_USUARIOS = "usuarios.json"
 
 
+def criar_card_arredondado(janela, largura, altura, raio=30):
+
+    canvas = tk.Canvas(
+        janela,
+        width=largura,
+        height=altura,
+        bg="#D9D9D9",
+        highlightthickness=0
+    )
+
+    pontos = [
+        raio, 0,
+        largura-raio, 0,
+        largura, 0,
+        largura, raio,
+        largura, altura-raio,
+        largura, altura,
+        largura-raio, altura,
+        raio, altura,
+        0, altura,
+        0, altura-raio,
+        0, raio,
+        0, 0
+    ]
+
+    canvas.create_polygon(
+        pontos,
+        smooth=True,
+        fill="white",
+        outline="white"
+    )
+
+    frame = tk.Frame(
+        canvas,
+        bg="white",
+        width=largura-20,
+        height=altura-20
+    )
+
+    canvas.create_window(
+        10,
+        10,
+        anchor="nw",
+        window=frame
+    )
+
+    frame.pack_propagate(False)
+
+    return canvas, frame
+
+
 def carregar_usuarios():
+
     if os.path.exists(ARQUIVO_USUARIOS):
-        with open(ARQUIVO_USUARIOS, "r", encoding="utf-8") as arquivo:
+
+        with open(
+            ARQUIVO_USUARIOS,
+            "r",
+            encoding="utf-8"
+        ) as arquivo:
+
             return json.load(arquivo)
+
     return {}
 
 
 def salvar_usuarios():
-    with open(ARQUIVO_USUARIOS, "w", encoding="utf-8") as arquivo:
-        json.dump(usuarios, arquivo, indent=4)
+
+    with open(
+        ARQUIVO_USUARIOS,
+        "w",
+        encoding="utf-8"
+    ) as arquivo:
+
+        json.dump(
+            usuarios,
+            arquivo,
+            indent=4
+        )
 
 
 usuarios = carregar_usuarios()
 
 
 def limpar_card():
+
     for widget in conteudo.winfo_children():
+
         widget.destroy()
 
 
 def criar_placeholder(campo, texto, senha=False):
+
     campo.insert(0, texto)
-    campo.config(fg="#AAAAAA", show="")
+
+    campo.config(
+        fg="#AAAAAA",
+        show=""
+    )
 
     def ao_clicar(event):
+
         if campo.get() == texto:
+
             campo.delete(0, tk.END)
+
             campo.config(fg="black")
+
             if senha:
+
                 campo.config(show="*")
 
     def ao_sair(event):
+
         if campo.get() == "":
+
             campo.insert(0, texto)
-            campo.config(fg="#AAAAAA", show="")
+
+            campo.config(
+                fg="#AAAAAA",
+                show=""
+            )
 
     campo.bind("<FocusIn>", ao_clicar)
+
     campo.bind("<FocusOut>", ao_sair)
 
 
 def login():
+
     nome = entrada_usuario.get()
+
     senha = entrada_senha.get()
 
-    if nome == "Username or e-mail" or senha == "Password":
-        messagebox.showerror("Erro", "Preencha todos os campos.")
+    if nome == "Nome de usuário ou e-mail" or senha == "Senha":
+
+        messagebox.showerror(
+            "Erro",
+            "Preencha todos os campos."
+        )
+
         return
 
     if nome in usuarios and usuarios[nome] == senha:
-        messagebox.showinfo("Sucesso", "Login realizado!")
-        subprocess.run(["py", "menu.py", nome])
+
+        messagebox.showinfo(
+            "Sucesso",
+            "Login realizado!"
+        )
+
+        janela.destroy()
+
+        subprocess.Popen(
+            ["py", "menu.py", nome]
+        )
+
     else:
-        messagebox.showerror("Erro", "Usuário ou senha incorretos.")
+
+        messagebox.showerror(
+            "Erro",
+            "Usuário ou senha incorretos."
+        )
 
 
 def cadastrar():
+
     nome = entrada_usuario.get()
+
     senha = entrada_senha.get()
+
     confirmar = entrada_confirmar.get()
 
-    if nome == "Username or e-mail" or senha == "Password" or confirmar == "Confirm password":
-        messagebox.showerror("Erro", "Preencha todos os campos.")
+    if (
+        nome == "Nome de usuário ou e-mail"
+        or senha == "Senha"
+        or confirmar == "Confirme a senha"
+    ):
+
+        messagebox.showerror(
+            "Erro",
+            "Preencha todos os campos."
+        )
+
         return
 
     if senha != confirmar:
-        messagebox.showerror("Erro", "As senhas não coincidem.")
+
+        messagebox.showerror(
+            "Erro",
+            "As senhas não coincidem."
+        )
+
         return
 
     if nome in usuarios:
-        messagebox.showerror("Erro", "Usuário já existe.")
+
+        messagebox.showerror(
+            "Erro",
+            "Usuário já existe."
+        )
+
         return
 
     usuarios[nome] = senha
+
     salvar_usuarios()
 
-    messagebox.showinfo("Sucesso", "Usuário cadastrado!")
+    messagebox.showinfo(
+        "Sucesso",
+        "Usuário cadastrado!"
+    )
+
     mostrar_login()
 
 
 def esqueceu_senha():
+
     messagebox.showinfo(
-        "CodeWheels",
+        "Code Wheels",
         "Procure o administrador do sistema."
     )
 
 
 def mostrar_login():
-    global entrada_usuario, entrada_senha
+
+    global entrada_usuario
+    global entrada_senha
 
     limpar_card()
 
-    botao_topo_login.config(bg="white", fg="#6E6E6E")
-    botao_topo_register.config(bg="#F0F0F0", fg="#999999")
+    botao_entrar.config(
+        bg="white",
+        fg="#6E6E6E"
+    )
 
-    icone = tk.Label(
+    botao_registro.config(
+        bg="#F0F0F0",
+        fg="#999999"
+    )
+
+    tk.Label(
         conteudo,
         text="👤",
         font=("Arial", 60),
         bg="white",
         fg="#AAAAAA"
-    )
-    icone.pack(pady=25)
+    ).pack(pady=25)
 
     entrada_usuario = tk.Entry(
         conteudo,
@@ -120,8 +265,13 @@ def mostrar_login():
         bd=0,
         width=34
     )
+
     entrada_usuario.pack(ipady=12, pady=8)
-    criar_placeholder(entrada_usuario, "Username or e-mail")
+
+    criar_placeholder(
+        entrada_usuario,
+        "Nome de usuário ou e-mail"
+    )
 
     entrada_senha = tk.Entry(
         conteudo,
@@ -130,24 +280,39 @@ def mostrar_login():
         bd=0,
         width=34
     )
-    entrada_senha.pack(ipady=12, pady=8)
-    criar_placeholder(entrada_senha, "Password", senha=True)
 
-    linha = tk.Frame(conteudo, bg="white")
-    linha.pack(fill="x", padx=75, pady=8)
+    entrada_senha.pack(ipady=12, pady=8)
+
+    criar_placeholder(
+        entrada_senha,
+        "Senha",
+        senha=True
+    )
+
+    linha = tk.Frame(
+        conteudo,
+        bg="white"
+    )
+
+    linha.pack(
+        fill="x",
+        padx=75,
+        pady=8
+    )
 
     lembrar = tk.Checkbutton(
         linha,
-        text="Remember me",
+        text="Lembrar de mim",
         bg="white",
         fg="#999999",
         font=("Arial", 9)
     )
+
     lembrar.pack(side="left")
 
     esqueci = tk.Button(
         linha,
-        text="I forgot password",
+        text="Esqueci a senha",
         bg="white",
         fg="#999999",
         bd=0,
@@ -155,51 +320,48 @@ def mostrar_login():
         cursor="hand2",
         command=esqueceu_senha
     )
+
     esqueci.pack(side="right")
 
-    botao = tk.Button(
+    tk.Button(
         conteudo,
-        text="Sign In",
+        text="Entrar",
         font=("Arial", 15),
         bg="#BFC5CC",
         fg="#2E2E2E",
         bd=0,
         width=17,
-        height=1,
+        height=2,
         cursor="hand2",
         command=login
-    )
-    botao.pack(pady=28)
-
-    trocar = tk.Button(
-        conteudo,
-        text="register",
-        bg="white",
-        fg="#999999",
-        bd=0,
-        font=("Arial", 10, "bold"),
-        cursor="hand2",
-        command=mostrar_register
-    )
-    trocar.pack()
+    ).pack(pady=28)
 
 
 def mostrar_register():
-    global entrada_usuario, entrada_senha, entrada_confirmar
+
+    global entrada_usuario
+    global entrada_senha
+    global entrada_confirmar
 
     limpar_card()
 
-    botao_topo_login.config(bg="#F0F0F0", fg="#999999")
-    botao_topo_register.config(bg="white", fg="#6E6E6E")
+    botao_entrar.config(
+        bg="#F0F0F0",
+        fg="#999999"
+    )
 
-    icone = tk.Label(
+    botao_registro.config(
+        bg="white",
+        fg="#6E6E6E"
+    )
+
+    tk.Label(
         conteudo,
         text="👤",
         font=("Arial", 60),
         bg="white",
         fg="#AAAAAA"
-    )
-    icone.pack(pady=25)
+    ).pack(pady=25)
 
     entrada_usuario = tk.Entry(
         conteudo,
@@ -208,8 +370,13 @@ def mostrar_register():
         bd=0,
         width=34
     )
+
     entrada_usuario.pack(ipady=12, pady=8)
-    criar_placeholder(entrada_usuario, "Username or e-mail")
+
+    criar_placeholder(
+        entrada_usuario,
+        "Nome de usuário ou e-mail"
+    )
 
     entrada_senha = tk.Entry(
         conteudo,
@@ -218,8 +385,14 @@ def mostrar_register():
         bd=0,
         width=34
     )
+
     entrada_senha.pack(ipady=12, pady=8)
-    criar_placeholder(entrada_senha, "Password", senha=True)
+
+    criar_placeholder(
+        entrada_senha,
+        "Senha",
+        senha=True
+    )
 
     entrada_confirmar = tk.Entry(
         conteudo,
@@ -228,71 +401,69 @@ def mostrar_register():
         bd=0,
         width=34
     )
-    entrada_confirmar.pack(ipady=12, pady=8)
-    criar_placeholder(entrada_confirmar, "Confirm password", senha=True)
 
-    botao = tk.Button(
+    entrada_confirmar.pack(ipady=12, pady=8)
+
+    criar_placeholder(
+        entrada_confirmar,
+        "Confirme a senha",
+        senha=True
+    )
+
+    tk.Button(
         conteudo,
-        text="Register",
+        text="Registrar",
         font=("Arial", 15),
         bg="#BFC5CC",
         fg="#2E2E2E",
         bd=0,
-        width=17,
-        height=1,
+        width=15,
+        height=10,
         cursor="hand2",
         command=cadastrar
-    )
-    botao.pack(pady=30)
-
-    trocar = tk.Button(
-        conteudo,
-        text="sign in",
-        bg="white",
-        fg="#999999",
-        bd=0,
-        font=("Arial", 10, "bold"),
-        cursor="hand2",
-        command=mostrar_login
-    )
-    trocar.pack()
+    ).pack(pady=28)
 
 
 janela = tk.Tk()
-janela.title("CodeWheels")
+
+janela.title("Code Wheels")
+
 janela.geometry("760x620")
+
 janela.configure(bg="#D9D9D9")
+
 janela.resizable(False, False)
 
 titulo = tk.Label(
     janela,
-    text="💻CodeWheels🚗",
+    text="💻Code Wheels🚗",
     font=("Wheel Turn", 32),
     bg="#D9D9D9",
     fg="#6E6E6E"
 )
+
 titulo.pack(pady=25)
 
-card = tk.Frame(
+card_canvas, card = criar_card_arredondado(
     janela,
-    bg="white",
-    width=500,
-    height=500
+    500,
+    500
 )
-card.pack()
-card.pack_propagate(False)
+
+card_canvas.pack()
 
 topo = tk.Frame(
     card,
     bg="#F0F0F0",
-    width=500,
+    width=480,
     height=75
 )
+
 topo.pack(fill="x")
 
-botao_topo_login = tk.Button(
+botao_entrar = tk.Button(
     topo,
-    text="↪  Sign In",
+    text="Entrar",
     font=("Arial", 18),
     bg="white",
     fg="#6E6E6E",
@@ -302,11 +473,12 @@ botao_topo_login = tk.Button(
     cursor="hand2",
     command=mostrar_login
 )
-botao_topo_login.place(x=0, y=0)
 
-botao_topo_register = tk.Button(
+botao_entrar.place(x=0, y=0)
+
+botao_registro = tk.Button(
     topo,
-    text="☼  Register",
+    text="Registro",
     font=("Arial", 18),
     bg="#F0F0F0",
     fg="#999999",
@@ -316,15 +488,20 @@ botao_topo_register = tk.Button(
     cursor="hand2",
     command=mostrar_register
 )
-botao_topo_register.place(x=250, y=0)
+
+botao_registro.place(x=240, y=0)
 
 conteudo = tk.Frame(
     card,
     bg="white",
-    width=500,
-    height=425
+    width=480,
+    height=405
 )
-conteudo.pack(fill="both", expand=True)
+
+conteudo.pack(
+    fill="both",
+    expand=True
+)
 
 mostrar_login()
 

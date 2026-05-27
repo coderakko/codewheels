@@ -2,24 +2,80 @@ import tkinter as tk
 import socket
 import json
 import os
+import sys
+import subprocess
 import pyglet
 
 pyglet.font.add_file("Wheel Turn.otf")
 
 PORTA = 5000
-ARQUIVO_CARRINHO = "carrinho.json"
+ARQUIVO_ROVER = "rover.json"
 
 cliente = None
 conectado = False
+usuario = "Usuário"
+
+if len(sys.argv) > 1:
+    usuario = sys.argv[1]
 
 
-def carregar_carrinho():
-    if os.path.exists(ARQUIVO_CARRINHO):
-        with open(ARQUIVO_CARRINHO, "r", encoding="utf-8") as arquivo:
+def criar_card_arredondado(janela, largura, altura, raio=30):
+    canvas = tk.Canvas(
+        janela,
+        width=largura,
+        height=altura,
+        bg="#D9D9D9",
+        highlightthickness=0
+    )
+
+    pontos = [
+        raio, 0,
+        largura - raio, 0,
+        largura, 0,
+        largura, raio,
+        largura, altura - raio,
+        largura, altura,
+        largura - raio, altura,
+        raio, altura,
+        0, altura,
+        0, altura - raio,
+        0, raio,
+        0, 0
+    ]
+
+    canvas.create_polygon(
+        pontos,
+        smooth=True,
+        fill="white",
+        outline="white"
+    )
+
+    frame = tk.Frame(
+        canvas,
+        bg="white",
+        width=largura - 20,
+        height=altura - 20
+    )
+
+    canvas.create_window(
+        10,
+        10,
+        anchor="nw",
+        window=frame
+    )
+
+    frame.pack_propagate(False)
+
+    return canvas, frame
+
+
+def carregar_rover():
+    if os.path.exists(ARQUIVO_ROVER):
+        with open(ARQUIVO_ROVER, "r", encoding="utf-8") as arquivo:
             return json.load(arquivo)
 
     return {
-        "nome": "Carrinho não cadastrado",
+        "nome": "Rover não cadastrado",
         "ip": ""
     }
 
@@ -27,14 +83,21 @@ def carregar_carrinho():
 def conectar():
     global cliente, conectado
 
-    dados = carregar_carrinho()
+    dados = carregar_rover()
     ip = dados["ip"]
 
-    label_nome_carrinho.config(text=f"Carrinho: {dados['nome']}")
+    label_nome_rover.config(
+        text=f"Rover: {dados['nome']}"
+    )
 
     if ip == "":
         conectado = False
-        label_status.config(text="IP do carrinho não cadastrado", fg="#E74C3C")
+
+        label_status.config(
+            text="IP do rover não cadastrado",
+            fg="#E74C3C"
+        )
+
         return
 
     try:
@@ -43,11 +106,19 @@ def conectar():
         cliente.connect((ip, PORTA))
 
         conectado = True
-        label_status.config(text="ESP32 ONLINE", fg="#2ECC71")
+
+        label_status.config(
+            text="ESP32 ONLINE",
+            fg="#2ECC71"
+        )
 
     except:
         conectado = False
-        label_status.config(text="ESP32 OFFLINE - modo teste", fg="#E74C3C")
+
+        label_status.config(
+            text="ESP32 OFFLINE - modo teste",
+            fg="#E74C3C"
+        )
 
 
 def enviar(comando):
@@ -56,14 +127,23 @@ def enviar(comando):
     if conectado:
         try:
             cliente.send(comando.encode())
-            label_comando.config(text=f"Comando enviado: {comando.upper()}")
+
+            label_comando.config(
+                text=f"Comando enviado: {comando.upper()}"
+            )
 
         except:
             conectado = False
-            label_status.config(text="CONEXÃO PERDIDA", fg="#E74C3C")
+
+            label_status.config(
+                text="CONEXÃO PERDIDA",
+                fg="#E74C3C"
+            )
 
     else:
-        label_comando.config(text=f"Modo teste: {comando.upper()}")
+        label_comando.config(
+            text=f"Modo teste: {comando.upper()}"
+        )
 
 
 def frente(event=None):
@@ -82,55 +162,67 @@ def direita(event=None):
     enviar("d")
 
 
+def voltar_menu():
+    janela.destroy()
+    subprocess.Popen(["py", "menu.py", usuario])
+
+
 janela = tk.Tk()
+
 janela.title("CodeWheels - Controle")
+
 janela.geometry("640x600")
+
 janela.configure(bg="#D9D9D9")
+
 janela.resizable(False, False)
 
 titulo = tk.Label(
     janela,
-    text="💻CodeWheels🚗",
+    text="💻Code Wheels🚗",
     font=("Wheel Turn", 28),
     bg="#D9D9D9",
     fg="#6E6E6E"
 )
+
 titulo.pack(pady=18)
 
-card = tk.Frame(
+card_canvas, card = criar_card_arredondado(
     janela,
-    bg="white",
-    width=460,
-    height=470
+    460,
+    470
 )
-card.pack()
-card.pack_propagate(False)
+
+card_canvas.pack()
 
 topo = tk.Frame(
     card,
     bg="#F0F0F0",
-    width=460,
+    width=440,
     height=65
 )
+
 topo.pack(fill="x")
 
 label_topo = tk.Label(
     topo,
-    text="🎮 Controle do Carrinho",
+    text="🎮 Controle do Rover",
     font=("Arial", 18),
     bg="#F0F0F0",
     fg="#6E6E6E"
 )
+
 label_topo.pack(pady=17)
 
-label_nome_carrinho = tk.Label(
+label_nome_rover = tk.Label(
     card,
-    text="Carrinho: carregando...",
+    text="Rover: carregando...",
     font=("Arial", 12),
     bg="white",
     fg="#777777"
 )
-label_nome_carrinho.pack(pady=8)
+
+label_nome_rover.pack(pady=8)
 
 label_status = tk.Label(
     card,
@@ -139,6 +231,7 @@ label_status = tk.Label(
     bg="white",
     fg="#999999"
 )
+
 label_status.pack(pady=8)
 
 label_comando = tk.Label(
@@ -148,9 +241,14 @@ label_comando = tk.Label(
     bg="white",
     fg="#777777"
 )
+
 label_comando.pack(pady=5)
 
-frame = tk.Frame(card, bg="white")
+frame = tk.Frame(
+    card,
+    bg="white"
+)
+
 frame.pack(pady=22)
 
 botao_frente = tk.Button(
@@ -165,6 +263,7 @@ botao_frente = tk.Button(
     cursor="hand2",
     command=frente
 )
+
 botao_frente.grid(row=0, column=1, padx=8, pady=8)
 
 botao_esquerda = tk.Button(
@@ -179,6 +278,7 @@ botao_esquerda = tk.Button(
     cursor="hand2",
     command=esquerda
 )
+
 botao_esquerda.grid(row=1, column=0, padx=8, pady=8)
 
 botao_tras = tk.Button(
@@ -193,6 +293,7 @@ botao_tras = tk.Button(
     cursor="hand2",
     command=tras
 )
+
 botao_tras.grid(row=1, column=1, padx=8, pady=8)
 
 botao_direita = tk.Button(
@@ -207,7 +308,21 @@ botao_direita = tk.Button(
     cursor="hand2",
     command=direita
 )
+
 botao_direita.grid(row=1, column=2, padx=8, pady=8)
+
+botao_voltar = tk.Button(
+    card,
+    text="Voltar",
+    font=("Arial", 11, "bold"),
+    bg="white",
+    fg="#999999",
+    bd=0,
+    cursor="hand2",
+    command=voltar_menu
+)
+
+botao_voltar.pack(pady=5)
 
 botao_sair = tk.Button(
     card,
@@ -219,7 +334,8 @@ botao_sair = tk.Button(
     cursor="hand2",
     command=janela.destroy
 )
-botao_sair.pack(pady=8)
+
+botao_sair.pack(pady=5)
 
 janela.bind("<w>", frente)
 janela.bind("<W>", frente)
