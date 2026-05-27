@@ -228,7 +228,7 @@ def cadastrar():
 def esqueceu_senha():
 
     messagebox.showinfo(
-        "Code Wheels",
+        "CodeWheels",
         "Procure o administrador do sistema."
     )
 
@@ -240,12 +240,12 @@ def mostrar_login():
 
     limpar_card()
 
-    botao_entrar.config(
+    botao_acessarconta.config(
         bg="white",
         fg="#6E6E6E"
     )
 
-    botao_registro.config(
+    botao_criarconta.config(
         bg="#F0F0F0",
         fg="#999999"
     )
@@ -345,12 +345,12 @@ def mostrar_register():
 
     limpar_card()
 
-    botao_entrar.config(
+    botao_acessarconta.config(
         bg="#F0F0F0",
         fg="#999999"
     )
 
-    botao_registro.config(
+    botao_criarconta.config(
         bg="white",
         fg="#6E6E6E"
     )
@@ -408,25 +408,28 @@ def mostrar_register():
         entrada_confirmar,
         "Confirme a senha",
         senha=True
+    
     )
-
-    tk.Button(
+    botao_registrar = tk.Button(
         conteudo,
         text="Registrar",
         font=("Arial", 15),
         bg="#BFC5CC",
         fg="#2E2E2E",
         bd=0,
-        width=15,
-        height=10,
+        width=17,
+        height=2,
         cursor="hand2",
         command=cadastrar
-    ).pack(pady=28)
+)
+
+    botao_registrar.pack(pady=20)
+
 
 
 janela = tk.Tk()
 
-janela.title("Code Wheels")
+janela.title("CodeWheels")
 
 janela.geometry("760x620")
 
@@ -436,7 +439,7 @@ janela.resizable(False, False)
 
 titulo = tk.Label(
     janela,
-    text="💻Code Wheels🚗",
+    text="💻CodeWheels🚗",
     font=("Wheel Turn", 32),
     bg="#D9D9D9",
     fg="#6E6E6E"
@@ -461,35 +464,41 @@ topo = tk.Frame(
 
 topo.pack(fill="x")
 
-botao_entrar = tk.Button(
+botao_acessarconta = tk.Button(
     topo,
-    text="Entrar",
+    text="Acessar conta",
     font=("Arial", 18),
     bg="white",
     fg="#6E6E6E",
     bd=0,
-    width=15,
-    height=2,
     cursor="hand2",
     command=mostrar_login
 )
 
-botao_entrar.place(x=0, y=0)
+botao_acessarconta.place(
+    x=0,
+    y=0,
+    width=240,
+    height=75
+)
 
-botao_registro = tk.Button(
+botao_criarconta = tk.Button(
     topo,
-    text="Registro",
+    text="Criar conta",
     font=("Arial", 18),
     bg="#F0F0F0",
     fg="#999999",
     bd=0,
-    width=15,
-    height=2,
     cursor="hand2",
     command=mostrar_register
 )
 
-botao_registro.place(x=240, y=0)
+botao_criarconta.place(
+    x=240,
+    y=0,
+    width=240,
+    height=75
+)
 
 conteudo = tk.Frame(
     card,
