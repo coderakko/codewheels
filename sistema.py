@@ -144,7 +144,7 @@ def login():
 
     senha = entrada_senha.get()
 
-    if nome == "Nome de usuário ou e-mail" or senha == "Senha":
+    if nome == "Nome de usuário" or senha == "Senha":
 
         messagebox.showerror(
             "Erro",
@@ -183,7 +183,7 @@ def cadastrar():
     confirmar = entrada_confirmar.get()
 
     if (
-        nome == "Nome de usuário ou e-mail"
+        nome == "Nome de usuário"
         or senha == "Senha"
         or confirmar == "Confirme a senha"
     ):
@@ -270,7 +270,7 @@ def mostrar_login():
 
     criar_placeholder(
         entrada_usuario,
-        "Nome de usuário ou e-mail"
+        "Nome de usuário"
     )
 
     entrada_senha = tk.Entry(
@@ -375,7 +375,7 @@ def mostrar_register():
 
     criar_placeholder(
         entrada_usuario,
-        "Nome de usuário ou e-mail"
+        "Nome de usuário"
     )
 
     entrada_senha = tk.Entry(
@@ -439,7 +439,7 @@ janela.resizable(False, False)
 
 titulo = tk.Label(
     janela,
-    text="💻CodeWheels🚗",
+    text="💻Code Wheels🚗",
     font=("Wheel Turn", 32),
     bg="#D9D9D9",
     fg="#6E6E6E"
