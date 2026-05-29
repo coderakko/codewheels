@@ -38,3 +38,10 @@ Notebook/Desktop (Sistema Python)
 ESP32 (Rover)
 
 Devem estar conectados na mesma rede Wi-Fi.
+
+## Observação
+
+Este projeto foi desenvolvido como atividade acadêmica utilizando Python, Tkinter e ESP32.
+
+Durante o desenvolvimento foram utilizadas ferramentas de Inteligência Artificial como apoio na criação da interface gráfica, correção de erros e implementação de funcionalidades. Todo o código foi revisado, testado, adaptado e integrado ao projeto pela autora, que participou ativamente das decisões de implementação e validação do sistema.
+
