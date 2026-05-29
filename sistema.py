@@ -1,3 +1,6 @@
+# Projeto acadêmico desenvolvido com auxílio do Jarvis(ChatGPT) com autorização do professor Lucas Moreira.
+# para apoio na construção da interface, correções e melhorias do código.
+# Todo o conteúdo foi revisado, testado e adaptado pela autora do projeto.
 import tkinter as tk
 from tkinter import messagebox
 import json

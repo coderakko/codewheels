@@ -1,3 +1,7 @@
+// Projeto acadêmico desenvolvido com auxílio do Jarvis (ChatGPT) com autorização do professor Lucas Moreira
+// para apoio na implementação, correções e integração entre Python e ESP32.
+// O código foi revisado, testado e adaptado pela autora do projeto.
+
 #include <WiFi.h>
 
 // ===============================
@@ -71,7 +75,7 @@ void direita() {
 
   digitalWrite(motor2A, HIGH);
   digitalWrite(motor2B, LOW);
-  
+
 }
 
 
