@@ -14,6 +14,7 @@ ARQUIVO_ROVER = "rover.json"
 cliente = None
 conectado = False
 usuario = "Usuário"
+tecla_atual = None
 
 if len(sys.argv) > 1:
     usuario = sys.argv[1]
@@ -92,12 +93,10 @@ def conectar():
 
     if ip == "":
         conectado = False
-
         label_status.config(
             text="IP do rover não cadastrado",
             fg="#E74C3C"
         )
-
         return
 
     try:
@@ -114,7 +113,6 @@ def conectar():
 
     except:
         conectado = False
-
         label_status.config(
             text="ESP32 OFFLINE - modo teste",
             fg="#E74C3C"
@@ -128,41 +126,56 @@ def enviar(comando):
         try:
             cliente.send(comando.encode())
 
-            label_comando.config(
-                text=f"Comando enviado: {comando.upper()}"
-            )
+            if comando == "p":
+                label_comando.config(text="Rover parado")
+            else:
+                label_comando.config(text=f"Comando enviado: {comando.upper()}")
 
         except:
             conectado = False
-
             label_status.config(
                 text="CONEXÃO PERDIDA",
                 fg="#E74C3C"
             )
 
     else:
-        label_comando.config(
-            text=f"Modo teste: {comando.upper()}"
-        )
+        if comando == "p":
+            label_comando.config(text="Modo teste: PARAR")
+        else:
+            label_comando.config(text=f"Modo teste: {comando.upper()}")
 
 
-def frente(event=None):
-    enviar("w")
+def pressionar_tecla(event):
+    global tecla_atual
+
+    tecla = event.keysym.lower()
+
+    if tecla in ["w", "a", "s", "d"]:
+        if tecla_atual != tecla:
+            tecla_atual = tecla
+            enviar(tecla)
 
 
-def tras(event=None):
-    enviar("s")
+def soltar_tecla(event):
+    global tecla_atual
+
+    tecla = event.keysym.lower()
+
+    if tecla in ["w", "a", "s", "d"]:
+        tecla_atual = None
+        enviar("p")
 
 
-def esquerda(event=None):
-    enviar("a")
+def pressionar_botao(comando):
+    enviar(comando)
 
 
-def direita(event=None):
-    enviar("d")
+def soltar_botao():
+    enviar("p")
 
 
 def voltar_menu():
+    enviar("p")
     janela.destroy()
     subprocess.Popen(["py", "menu.py", usuario])
 
@@ -236,7 +249,7 @@ label_status.pack(pady=8)
 
 label_comando = tk.Label(
     card,
-    text="Use W A S D ou clique nos botões",
+    text="Segure W A S D para mover",
     font=("Arial", 11),
     bg="white",
     fg="#777777"
@@ -260,11 +273,11 @@ botao_frente = tk.Button(
     bd=0,
     width=5,
     height=2,
-    cursor="hand2",
-    command=frente
+    cursor="hand2"
 )
-
 botao_frente.grid(row=0, column=1, padx=8, pady=8)
+botao_frente.bind("<ButtonPress-1>", lambda event: pressionar_botao("w"))
+botao_frente.bind("<ButtonRelease-1>", lambda event: soltar_botao())
 
 botao_esquerda = tk.Button(
     frame,
@@ -275,11 +288,11 @@ botao_esquerda = tk.Button(
     bd=0,
     width=5,
     height=2,
-    cursor="hand2",
-    command=esquerda
+    cursor="hand2"
 )
-
 botao_esquerda.grid(row=1, column=0, padx=8, pady=8)
+botao_esquerda.bind("<ButtonPress-1>", lambda event: pressionar_botao("a"))
+botao_esquerda.bind("<ButtonRelease-1>", lambda event: soltar_botao())
 
 botao_tras = tk.Button(
     frame,
@@ -290,11 +303,11 @@ botao_tras = tk.Button(
     bd=0,
     width=5,
     height=2,
-    cursor="hand2",
-    command=tras
+    cursor="hand2"
 )
-
 botao_tras.grid(row=1, column=1, padx=8, pady=8)
+botao_tras.bind("<ButtonPress-1>", lambda event: pressionar_botao("s"))
+botao_tras.bind("<ButtonRelease-1>", lambda event: soltar_botao())
 
 botao_direita = tk.Button(
     frame,
@@ -305,11 +318,11 @@ botao_direita = tk.Button(
     bd=0,
     width=5,
     height=2,
-    cursor="hand2",
-    command=direita
+    cursor="hand2"
 )
-
 botao_direita.grid(row=1, column=2, padx=8, pady=8)
+botao_direita.bind("<ButtonPress-1>", lambda event: pressionar_botao("d"))
+botao_direita.bind("<ButtonRelease-1>", lambda event: soltar_botao())
 
 botao_voltar = tk.Button(
     card,
@@ -337,14 +350,8 @@ botao_sair = tk.Button(
 
 botao_sair.pack(pady=5)
 
-janela.bind("<w>", frente)
-janela.bind("<W>", frente)
-janela.bind("<s>", tras)
-janela.bind("<S>", tras)
-janela.bind("<a>", esquerda)
-janela.bind("<A>", esquerda)
-janela.bind("<d>", direita)
-janela.bind("<D>", direita)
+janela.bind("<KeyPress>", pressionar_tecla)
+janela.bind("<KeyRelease>", soltar_tecla)
 
 janela.focus_force()
 
