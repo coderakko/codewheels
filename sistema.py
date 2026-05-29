@@ -300,16 +300,6 @@ def mostrar_login():
         pady=8
     )
 
-    lembrar = tk.Checkbutton(
-        linha,
-        text="Lembrar de mim",
-        bg="white",
-        fg="#999999",
-        font=("Arial", 9)
-    )
-
-    lembrar.pack(side="left")
-
     esqueci = tk.Button(
         linha,
         text="Esqueci a senha",
@@ -408,8 +398,8 @@ def mostrar_register():
         entrada_confirmar,
         "Confirme a senha",
         senha=True
-    
     )
+
     botao_registrar = tk.Button(
         conteudo,
         text="Registrar",
@@ -421,10 +411,9 @@ def mostrar_register():
         height=2,
         cursor="hand2",
         command=cadastrar
-)
+    )
 
     botao_registrar.pack(pady=20)
-
 
 
 janela = tk.Tk()

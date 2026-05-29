@@ -100,6 +100,12 @@ def conectar():
         return
 
     try:
+        if cliente:
+            cliente.close()
+    except:
+        pass
+
+    try:
         cliente = socket.socket()
         cliente.settimeout(2)
         cliente.connect((ip, PORTA))
@@ -122,6 +128,9 @@ def conectar():
 def enviar(comando):
     global conectado
 
+    if not conectado:
+        conectar()
+
     if conectado:
         try:
             cliente.send(comando.encode())
@@ -134,9 +143,32 @@ def enviar(comando):
         except:
             conectado = False
             label_status.config(
-                text="CONEXÃO PERDIDA",
+                text="CONEXÃO PERDIDA - tentando reconectar",
                 fg="#E74C3C"
             )
+
+            conectar()
+
+            if conectado:
+                try:
+                    cliente.send(comando.encode())
+
+                    if comando == "p":
+                        label_comando.config(text="Rover parado")
+                    else:
+                        label_comando.config(text=f"Comando enviado: {comando.upper()}")
+
+                except:
+                    conectado = False
+                    label_status.config(
+                        text="CONEXÃO PERDIDA",
+                        fg="#E74C3C"
+                    )
+            else:
+                if comando == "p":
+                    label_comando.config(text="Modo teste: PARAR")
+                else:
+                    label_comando.config(text=f"Modo teste: {comando.upper()}")
 
     else:
         if comando == "p":
